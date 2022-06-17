@@ -16,6 +16,8 @@ class Game:
 		self.board = Board()
 		self.x_offset = self.WIDTH//2-self.board.width//2
 		self.y_offset = self.HEIGHT//2-self.board.height//2
+		self.moves = []
+		self.selected_piece = None
 
 	def draw(self, screen):
 		screen.fill(BLACK)
@@ -32,7 +34,7 @@ class Game:
 			for j in range(len(self.board.board[i])):
 				if self.board.board[i][j] is not None:
 					self.board.board[i][j].draw(screen, pg.mouse.get_pos())
-					self.board.board[i][j].draw_moves(screen)
+					self.board.board[i][j].draw_moves(screen, pg.mouse.get_pos())
 		pg.display.flip()
 
 	def set_pieces(self):
@@ -47,10 +49,24 @@ class Game:
 		if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
 			for i in range(len(self.board.board)):
 				for j in range(len(self.board.board[i])):
+
 					if self.board.board[i][j] is not None:
 						self.board.board[i][j].selected = False
+
 						if self.board.board[i][j].hover:
-							self.board.board[i][j].click()
+							self.board.board[i][j].click(self.SCREEN)
+							self.selected_piece = self.board.board[i][j]
+							self.moves = self.board.board[i][j].moves
+					
+			for i in range(len(self.board.board)):
+				for j in range(len(self.board.board[i])):
+					if self.board.board[i][j] is None:
+						for k in range(len(self.moves)):
+							if self.selected_piece.selected_move == k and self.moves[k] == [i, j]:
+								self.selected_piece.board_x = j
+								self.selected_piece.board_y = i
+								self.selected_piece.selected_move = -1
+
 
 
 
